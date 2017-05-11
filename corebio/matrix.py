@@ -507,3 +507,76 @@ class Motif(AlphabeticArray):
             matrix.transpose()
 
         return Motif(defacto_alphabet, matrix).reindex(alphabet)
+
+
+
+class Aho(AlphabeticArray):
+    """A two dimensional array where the second dimension is indexed by an 
+    Alphabet. Used to represent sequence motifs and similar information.
+
+    
+    Attr:
+    - alphabet     -- An Alphabet
+    - array        -- A numpy array
+    - name         -- The name of this motif (if any) as a string.
+    - description  -- The description, if any.
+    
+    """
+
+    def __init__(self, alphabet, array=None, dtype=None, name=None,
+                 description=None, scale=None):
+        AlphabeticArray.__init__(self, (None, alphabet), array, dtype)
+        self.name = name
+        self.description = description
+        self.scale = scale
+
+    @property
+    def alphabet(self):
+        return self.alphabets[1]
+
+    def reindex(self, alphabet):
+        return Motif(alphabet, AlphabeticArray.reindex(self, (None, alphabet)))
+
+    # These methods alter self, and therefore do not return a value.
+    # (Compare to Seq objects, where the data is immutable and therefore methods return a new Seq.)
+    # TODO: Should reindex (above) also act on self?
+
+    def reverse(self):
+        """Reverse sequence data"""
+        # self.array = na.array(self.array[::-1])  # This is a view into the origional numpy array.
+        self.array = self.array[::-1]  # This is a view into the origional numpy array.
+
+    def complement(self):
+        """Complement nucleic acid sequence."""
+        from corebio.seq import Seq, Alphabet
+        alphabet = self.alphabet
+        complement_alphabet = Alphabet(Seq(alphabet, alphabet).complement())
+        self.alphabets = (None, complement_alphabet)
+
+        m = self.reindex(alphabet)
+        self.alphabets = (None, alphabet)
+        self.array = m.array
+
+    def reverse_complement(self):
+        """Complements and reverses nucleic acid sequence (i.e. the other strand
+        of a DNA sequence.)
+        """
+        self.reverse()
+        self.complement()
+
+    @staticmethod  # TODO: should be classmethod?
+    def read_aho(fin, alphabet=None):
+        AHO_L = 149
+        defacto_alphabet = 'ACDEFGHIKLMNPQRSTVWY'  # Note gap character is skipped
+        matrix = na.zeros((AHO_L, len(defacto_alphabet)), dtype=na.float64)
+        line = fin.read()
+        cols = line.split(',')
+        # Slice the Aho positions out:
+        cols = cols[-21*AHO_L:]  # Multiply by 21 to include gap character
+        cols = list(map(float, cols))
+        for r in range(AHO_L):
+            for c in range(len(defacto_alphabet)):
+                matrix[r, c] = cols[r*21+c]  # Multiply by 21 to include gap character
+
+        #print(matrix)
+        return Motif(defacto_alphabet, matrix).reindex(alphabet)

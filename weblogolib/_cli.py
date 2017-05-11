@@ -86,8 +86,10 @@ def main():
         # logo = logo.encode()
 
         if sys.version_info[0] >= 3:
+            #pass
             opts.fout.buffer.write(logo)
         else:
+            #pass
             opts.fout.write(logo)
         # print(logo, file=opts.fout)
 
@@ -164,9 +166,8 @@ def _build_logodata(options):
             raise ValueError("error: options --fin and --upload are incompatible")
 
     try:
-        # Try reading data in transfac format first.     
-        from corebio.matrix import Motif
-        motif = Motif.read_transfac(fin, alphabet=options.alphabet)
+        from corebio.matrix import Aho
+        motif = Aho.read_aho(fin, alphabet=options.alphabet)
         motif_flag = True
     except ValueError as motif_err:
         # Failed reading Motif, try reading as multiple sequence data.
