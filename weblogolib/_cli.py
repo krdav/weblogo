@@ -86,10 +86,8 @@ def main():
         # logo = logo.encode()
 
         if sys.version_info[0] >= 3:
-            #pass
             opts.fout.buffer.write(logo)
         else:
-            #pass
             opts.fout.write(logo)
         # print(logo, file=opts.fout)
 
