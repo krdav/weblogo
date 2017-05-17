@@ -9,7 +9,8 @@ AA_LIST = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q',
 AA_INDEX = {aa:i for i, aa in enumerate(AA_LIST)}
 
 AHO_L = 149
-WEBLOGO_EXE = '/Users/krdav/Dropbox/seattle_master/weblogo/weblogo'
+WEBLOGO_EXE = os.getcwd() + '/weblogo'
+
 
 
 ## Read from three files
